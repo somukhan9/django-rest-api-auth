@@ -157,7 +157,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication'
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'authapp.authentication.CustomJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
@@ -165,11 +166,11 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=5),
     "AUTH_HEADER_TYPES": ("Bearer",),
+    # "ROTATE_REFRESH_TOKENS": True,
 }
-
 
 # Password Reset Link Expiration
 PASSWORD_RESET_TIMEOUT = 900     # 15 MINUTES
@@ -177,8 +178,8 @@ PASSWORD_RESET_TIMEOUT = 900     # 15 MINUTES
 
 # Email Configuration
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER1", "pvun logq exai ulqc")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = True

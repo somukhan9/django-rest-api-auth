@@ -11,20 +11,20 @@ class UserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
         if not email:
             raise ValidationError(
-                "User must have an email!")
+                "User must have an email.")
 
         if not username:
-            raise ValidationError("User must have an username!")
+            raise ValidationError("User must have an username.")
 
         if len(password) < 8:
             raise ValidationError(
-                "Password should be at least of 8 characters!")
+                "Password should be at least of 8 characters.")
 
         if self.model._default_manager.filter(email=self.normalize_email(email)).exists():
             # raise ValueError("A user with that email already exists!")
-            print("A user with that email already exists!")
+            print("A user with that email already exists.")
             raise ValidationError(
-                "A user with " + f"email \"{email}\" already exists!")
+                "A user with " + f"email \"{email}\" already exists.")
 
         user = self.model(
             email=self.normalize_email(email),
@@ -54,7 +54,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=200, unique=True, error_messages={
-        "unique": "A user with that email already exists!"
+        "unique": "A user with that email already exists."
     })
     profile_picture = models.ImageField(
         upload_to="media/users", null=True, blank=True)

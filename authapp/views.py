@@ -5,7 +5,11 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenViewBase
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+
 from django.contrib.auth import get_user_model, authenticate
+
 
 from .serializers import (
     UserSerializer,
@@ -56,9 +60,86 @@ class LoginUserAPIView(views.APIView):
 
         if user is not None:
             token = get_auth_token(user=user)
-            return Response({"detail": "User Logged In Successfully!", "token": token}, status=status.HTTP_200_OK)
+            response = Response(
+                {"detail": "User Logged In Successfully!", "token": token}, status=status.HTTP_200_OK)
+
+            """
+            TODO: set the secure option to True for production
+            """
+
+            response.set_cookie(
+                "access_token", token["access"], httponly=True, secure=False)
+            response.set_cookie(
+                "refresh_token", token["refresh"], httponly=True, secure=False)
+            return response
 
         return Response({"errors": {"non_field_errors": ["Invalid Credentials!"]}}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Logout(views.APIView):
+    renderer_classes = [AuthAppRenderer]
+
+    def get(self, request, *args, **kwargs):
+        response = Response(
+            {"detail": "Logged out successfully"}, status=status.HTTP_200_OK)
+
+        """
+        TODO: set the secure option to True for production
+        """
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+
+        return response
+
+
+class CustomTokenRefreshView(TokenViewBase):
+    renderer_classes = [AuthAppRenderer]
+
+    """
+    Custom view for refreshing tokens.
+    """
+
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.data.get("refresh", "")
+
+        if not refresh_token and "refresh_token" in request.COOKIES:
+            refresh_token = request.COOKIES["refresh_token"]
+
+        if not refresh_token:
+            return Response({"detail": "Refresh Token not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+
+            # Create a new access token and refresh token
+            new_access_token = RefreshToken(refresh_token).access_token
+
+            """
+            If we want to generate a new refresh token while refreshing the access token
+            so that the regular user can logged in for a long time
+            """
+            # new_refresh_token = RefreshToken(
+            #     refresh_token).for_user(request.user)
+
+            response_data = {
+                'access': str(new_access_token),
+                # 'refresh': str(new_refresh_token),
+            }
+
+            response = Response({"detail": "Access token refreshed successfully",
+                                "token": response_data}, status=status.HTTP_200_OK)
+
+            """
+            TODO: set the secure option to True for production
+            """
+
+            response.set_cookie(
+                "access_token", new_access_token, httponly=True, secure=False)
+            # response.set_cookie("refresh_token", new_refresh_token, httponly=True, secure=False)
+
+            return response
+
+        except Exception as e:
+            return Response({"errors": {"non_field_errors": [f"Error refreshing tokens: {str(e)}"]}}, status=status.HTTP_403_FORBIDDEN)
 
 
 class ProfileAPIView(views.APIView):
