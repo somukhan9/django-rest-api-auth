@@ -11,7 +11,7 @@ class CustomJWTAuthentication(JWTAuthentication):
             if len(parts) == 2:
                 return parts[1]
 
-        # Check if the refresh token is provided in the cookies
+        # Check if the access token is provided in the cookies
         if 'access_token' in request.COOKIES:
             return request.COOKIES['access_token']
 
@@ -33,7 +33,7 @@ class CustomJWTAuthentication(JWTAuthentication):
         except Exception as ex:
             print("Exception")
             print(str(ex))
-            # raise e
+            raise ex
 
         return None
 
