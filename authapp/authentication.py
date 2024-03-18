@@ -33,7 +33,7 @@ class CustomJWTAuthentication(JWTAuthentication):
         except Exception as ex:
             print("Exception")
             print(str(ex))
-            raise ex
+            # raise ex
 
         return None
 
