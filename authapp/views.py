@@ -6,7 +6,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenViewBase
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from django.contrib.auth import get_user_model, authenticate
 
@@ -61,7 +60,7 @@ class LoginUserAPIView(views.APIView):
         if user is not None:
             token = get_auth_token(user=user)
             response = Response(
-                {"detail": "User Logged In Successfully!", "token": token}, status=status.HTTP_200_OK)
+                {"detail": "User Logged In Successfully!", "data": token, "statusCode": status.HTTP_200_OK, "success": True}, status=status.HTTP_200_OK)
 
             """
             TODO: set the secure option to True for production
@@ -73,7 +72,7 @@ class LoginUserAPIView(views.APIView):
                 "refresh_token", token["refresh"], httponly=True, secure=False)
             return response
 
-        return Response({"errors": {"non_field_errors": ["Invalid Credentials!"]}}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"errors": {"non_field_errors": ["Invalid Credentials!"]}, "statusCode": status.HTTP_400_BAD_REQUEST, "success": False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Logout(views.APIView):
@@ -81,7 +80,7 @@ class Logout(views.APIView):
 
     def get(self, request, *args, **kwargs):
         response = Response(
-            {"detail": "Logged out successfully"}, status=status.HTTP_200_OK)
+            {"detail": "Logged out successfully", "data": None, "statusCode": status.HTTP_200_OK, "success": True}, status=status.HTTP_200_OK)
 
         """
         TODO: set the secure option to True for production
@@ -126,7 +125,7 @@ class CustomTokenRefreshView(TokenViewBase):
             }
 
             response = Response({"detail": "Access token refreshed successfully",
-                                "token": response_data}, status=status.HTTP_200_OK)
+                                "data": response_data, "statusCode": status.HTTP_200_OK, "success": True}, status=status.HTTP_200_OK)
 
             """
             TODO: set the secure option to True for production
@@ -139,7 +138,7 @@ class CustomTokenRefreshView(TokenViewBase):
             return response
 
         except Exception as e:
-            return Response({"errors": {"non_field_errors": [f"Error refreshing tokens: {str(e)}"]}}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"errors": {"non_field_errors": [f"Error refreshing tokens: {str(e)}"]}, "statusCode": status.HTTP_403_FORBIDDEN, "success": False}, status=status.HTTP_403_FORBIDDEN)
 
 
 class ProfileAPIView(views.APIView):
@@ -148,7 +147,7 @@ class ProfileAPIView(views.APIView):
     def get(self, request, format=None):
         serializer = UserSerializer(request.user)
 
-        return Response({"detail": "Profile data fetched successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response({"detail": "Profile data fetched successfully", "data": serializer.data, "statusCode": status.HTTP_200_OK, "success": True}, status=status.HTTP_200_OK)
 
 
 class ChangePasswordAPIView(views.APIView):
@@ -160,7 +159,7 @@ class ChangePasswordAPIView(views.APIView):
 
         serializer.is_valid(raise_exception=True)
 
-        return Response({"detail": "Password changed successfully!"},
+        return Response({"detail": "Password changed successfully!", "data": None, "statusCode": status.HTTP_200_OK, "success": True},
                         status=status.HTTP_200_OK)
 
 
@@ -173,7 +172,7 @@ class SendResetPasswordEmailAPIView(views.APIView):
         serializer.is_valid(raise_exception=True)
 
         return Response(
-            {"detail": "Check Your Email. Password Reset link has been sent to your email."})
+            {"detail": "Check Your Email. Password Reset link has been sent to your email.", "data": None, "statusCode": status.HTTP_200_OK, "success": True}, status=status.HTTP_200_OK)
 
 
 class ResetPasswordAPIView(views.APIView):
@@ -184,4 +183,4 @@ class ResetPasswordAPIView(views.APIView):
         serializer = ResetPasswordSerializer(data=request.data, context={
                                              "uid": uid, "token": token})
         serializer.is_valid(raise_exception=True)
-        return Response({"detail": "Password reset successfully!"})
+        return Response({"detail": "Password reset successfully!", "data": None, "statusCode": status.HTTP_200_OK, "success": True}, status=status.HTTP_200_OK)

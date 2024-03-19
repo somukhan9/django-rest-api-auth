@@ -1,4 +1,5 @@
 import json
+from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 
 
@@ -7,9 +8,13 @@ class AuthAppRenderer(JSONRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         response = ''
+        status_code = getattr(data, 'statusCode',
+                              status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if "ErrorDetail" in str(data):
-            response = json.dumps({"errors": data})
+            print("HELLO " + data)
+            response = json.dumps(
+                {"errors": data, "statusCode": status_code, "success": False})
         else:
             response = json.dumps(data)
 
