@@ -22,7 +22,7 @@ class UserManager(BaseUserManager):
 
         if self.model._default_manager.filter(email=self.normalize_email(email)).exists():
             # raise ValueError("A user with that email already exists!")
-            print("A user with that email already exists.")
+            # print("A user with that email already exists.")
             raise ValidationError(
                 "A user with " + f"email \"{email}\" already exists.")
 

@@ -154,10 +154,12 @@ MEDIA_ROOT = BASE_DIR / 'uploads'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Django Cors Headers
 
+"""
+Django Cors Headers settings
+"""
 CORS_ALLOW_ALL_ORIGINS = True
-
+# CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # CORS_ALLOWED_ORIGINS = [
@@ -167,15 +169,10 @@ CORS_ALLOW_CREDENTIALS = True
 #     "http://127.0.0.1:3000",
 # ]
 
-# CORS_ALLOW_METHODS = (
-#     "DELETE",
-#     "GET",
-#     "OPTIONS",
-#     "PATCH",
-#     "POST",
-#     "PUT",
-# )
 
+"""
+REST FRAMEWORK settings
+"""
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -187,18 +184,41 @@ REST_FRAMEWORK = {
     ],
 }
 
+
+"""
+SIMPLE JWT settings
+"""
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
     # "ROTATE_REFRESH_TOKENS": True,
 }
 
-# Password Reset Link Expiration
+
+"""
+COOKIE settings
+"""
+AUTH_COOKIE_ACCESS_TOKEN_KEY = "access"
+AUTH_COOKIE_REFRESH_TOKEN_KEY = "refresh"
+AUTH_COOKIE_ACCESS_TOKEN_MAX_AGE = 10  # 10 seconds
+AUTH_COOKIE_REFRESH_TOKEN_MAX_AGE = 5 * 60  # 5 minutes
+
+AUTH_COOKIE_PATH = "/"
+AUTH_COOKIE_SAME_SITE = "None"
+AUTH_COOKIE_HTTP_ONLY = True
+AUTH_COOKIE_SECURE = True
+
+
+"""
+Password Reset Link Expiration
+"""
 PASSWORD_RESET_TIMEOUT = 900     # 15 MINUTES
 
 
-# Email Configuration
+"""
+Email Configuration
+"""
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = os.getenv("EMAIL_PORT")
