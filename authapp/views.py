@@ -107,8 +107,14 @@ class Logout(views.APIView):
         """
         TODO: set the secure option to True for production
         """
-        response.delete_cookie(settings.AUTH_COOKIE_ACCESS_TOKEN_KEY)
-        response.delete_cookie(settings.AUTH_COOKIE_REFRESH_TOKEN_KEY)
+
+        response.set_cookie(
+            settings.AUTH_COOKIE_ACCESS_TOKEN_KEY, None, httponly=settings.AUTH_COOKIE_HTTP_ONLY, secure=settings.AUTH_COOKIE_SECURE, max_age=settings.AUTH_COOKIE_ACCESS_TOKEN_MAX_AGE, path=settings.AUTH_COOKIE_PATH, samesite=settings.AUTH_COOKIE_SAME_SITE
+        )
+
+        response.set_cookie(
+            settings.AUTH_COOKIE_REFRESH_TOKEN_KEY, None, httponly=settings.AUTH_COOKIE_HTTP_ONLY, secure=settings.AUTH_COOKIE_SECURE, max_age=settings.AUTH_COOKIE_REFRESH_TOKEN_MAX_AGE, path=settings.AUTH_COOKIE_PATH, samesite=settings.AUTH_COOKIE_SAME_SITE
+        )
 
         return response
 
