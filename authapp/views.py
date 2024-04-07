@@ -51,7 +51,12 @@ class CreateUserView(
     renderer_classes = [AuthAppRenderer]
 
     def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        response = self.create(request, *args, **kwargs)
+        response.data["detail"] = "Registration Successful!"
+        response.data["statusCode"] = response.status_code
+        response.data["success"] = True
+
+        return response
 
 
 class LoginUserAPIView(TokenObtainPairView):
