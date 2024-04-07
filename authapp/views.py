@@ -52,11 +52,19 @@ class CreateUserView(
 
     def post(self, request, *args, **kwargs):
         response = self.create(request, *args, **kwargs)
-        response.data["detail"] = "Registration Successful!"
-        response.data["statusCode"] = response.status_code
-        response.data["success"] = True
 
-        return response
+        # Extract relevant information from the response object
+        serializer_data = response.data
+
+        # Customize the response
+        response_data = {
+            "detail": "Registration Successful!",
+            "statusCode": response.status_code,
+            "success": True,
+            "data": serializer_data,  # Assign serializer data
+        }
+
+        return Response(response_data, status=response.status_code)
 
 
 class LoginUserAPIView(TokenObtainPairView):
@@ -75,17 +83,9 @@ class LoginUserAPIView(TokenObtainPairView):
                 settings.AUTH_COOKIE_ACCESS_TOKEN_KEY, access_token, httponly=settings.AUTH_COOKIE_HTTP_ONLY, secure=settings.AUTH_COOKIE_SECURE, max_age=settings.AUTH_COOKIE_ACCESS_TOKEN_MAX_AGE, path=settings.AUTH_COOKIE_PATH, samesite=settings.AUTH_COOKIE_SAME_SITE
             )
 
-            """
-"""
-
             response.set_cookie(
                 settings.AUTH_COOKIE_REFRESH_TOKEN_KEY, refresh_token, httponly=settings.AUTH_COOKIE_HTTP_ONLY, secure=settings.AUTH_COOKIE_SECURE, max_age=settings.AUTH_COOKIE_REFRESH_TOKEN_MAX_AGE, path=settings.AUTH_COOKIE_PATH, samesite=settings.AUTH_COOKIE_SAME_SITE
             )
-
-            """
-"""
-
-            # "detail": "User Logged In Successfully!", "data": token, "statusCode": status.HTTP_200_OK, "success": True
 
             response.data["detail"] = "User Logged In Successfully!"
             response.data["statusCode"] = response.status_code
